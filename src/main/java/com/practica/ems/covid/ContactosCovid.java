@@ -3,6 +3,7 @@ package com.practica.ems.covid;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -144,7 +145,11 @@ public class ContactosCovid {
 
 	public void inicializarFichero (boolean reset, String fichero, File archivo, FileReader fr, BufferedReader br){
 		archivo = new File(fichero);
-		fr = new FileReader(archivo);
+		try {
+			fr = new FileReader(archivo);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		}
 		br = new BufferedReader(fr);
 		if (reset) {
 			this.poblacion = new Poblacion();
