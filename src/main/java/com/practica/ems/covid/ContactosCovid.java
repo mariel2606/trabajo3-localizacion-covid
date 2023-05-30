@@ -1,7 +1,10 @@
 package com.practica.ems.covid;
 
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -88,7 +91,6 @@ public class ContactosCovid {
 	}
 
 
-
 	@SuppressWarnings("resource")
 	public void loadDataFile(String fichero, boolean reset) {
 		File archivo = null;
@@ -98,46 +100,45 @@ public class ContactosCovid {
 		try {
 			// Apertura del fichero y creacion de BufferedReader para poder
 			// hacer una lectura comoda (disponer del metodo readLine()).
-			BufferedReader brnew;
-			brnew = inicializarFichero(reset, fichero, archivo, fr, br);
-			lecturaLineaALinea(brnew, datas, data);
+			inicializarFichero(reset, fichero, archivo, fr, br);
 			/**
 			 * Lectura del fichero	línea a línea. Compruebo que cada línea 
 			 * tiene el tipo PERSONA o LOCALIZACION y cargo la línea de datos en la 
 			 * lista correspondiente. Sino viene ninguno de esos tipos lanzo una excepción
 			 */
+			while ((data = br.readLine()) != null) {
+				datas = dividirEntrada(data.trim());
+				for (String linea : datas) {
+					String datos[] = this.dividirLineaData(linea);
+					if (!datos[0].equals("PERSONA") && !datos[0].equals("LOCALIZACION")) {
+						throw new EmsInvalidTypeException();
+					}
+					if (datos[0].equals("PERSONA")) {
+						if (datos.length != Constantes.MAX_DATOS_PERSONA) {
+							throw new EmsInvalidNumberOfDataException("El número de datos para PERSONA es menor de 8");
+						}
+						this.poblacion.addPersona(this.crearPersona(datos));
+					}
+					if (datos[0].equals("LOCALIZACION")) {
+						if (datos.length != Constantes.MAX_DATOS_LOCALIZACION) {
+							throw new EmsInvalidNumberOfDataException(
+									"El número de datos para LOCALIZACION es menor de 6" );
+						}
+						PosicionPersona pp = this.crearPosicionPersona(datos);
+						this.localizacion.addLocalizacion(pp);
+						this.listaContactos.insertarNodoTemporal(pp);
+					}
+				}
+
+			}
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			cerrarFichero(fr);
 		}
 	}
-public void lecturaLineaALinea (BufferedReader br, String datas[], String data) throws IOException, EmsInvalidTypeException, EmsInvalidNumberOfDataException, EmsDuplicatePersonException, EmsDuplicateLocationException {
-	while ((data = br.readLine()) != null) {
-		datas = dividirEntrada(data.trim());
-		for (String linea : datas) {
-			String datos[] = this.dividirLineaData(linea);
-			if (!datos[0].equals("PERSONA") && !datos[0].equals("LOCALIZACION")) {
-				throw new EmsInvalidTypeException();
-			}
-			if (datos[0].equals("PERSONA")) {
-				if (datos.length != Constantes.MAX_DATOS_PERSONA) {
-					throw new EmsInvalidNumberOfDataException("El número de datos para PERSONA es menor de 8");
-				}
-				this.poblacion.addPersona(this.crearPersona(datos));
-			}
-			if (datos[0].equals("LOCALIZACION")) {
-				if (datos.length != Constantes.MAX_DATOS_LOCALIZACION) {
-					throw new EmsInvalidNumberOfDataException(
-							"El número de datos para LOCALIZACION es menor de 6" );
-				}
-				PosicionPersona pp = this.crearPosicionPersona(datos);
-				this.localizacion.addLocalizacion(pp);
-				this.listaContactos.insertarNodoTemporal(pp);
-			}
-		}
-
-	}
+public void comprobarNumPersonas (){
 
 }
 	public BufferedReader inicializarFichero (boolean reset, String fichero, File archivo, FileReader fr, BufferedReader br){
