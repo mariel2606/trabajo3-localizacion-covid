@@ -243,25 +243,29 @@ public class ContactosCovid {
 			String s = data[i];
 
 			if (s != null && !s.isEmpty()) {
-				switch (i) {
-					case 1:
-					case 2:
-					case 3:
-						setDatosPersonales(persona, i, s);
-						break;
-					case 4:
-					case 5:
-					case 6:
-						setDatosContacto(persona, i, s);
-						break;
-					case 7:
-						persona.setFechaNacimiento(parsearFecha(s));
-						break;
-				}
+				processPersonaData(persona, i, s);
 			}
 		}
 
 		return persona;
+	}
+
+	private void processPersonaData(Persona persona, int i, String s) {
+		switch (i) {
+			case 1:
+			case 2:
+			case 3:
+				setDatosPersonales(persona, i, s);
+				break;
+			case 4:
+			case 5:
+			case 6:
+				setDatosContacto(persona, i, s);
+				break;
+			case 7:
+				persona.setFechaNacimiento(parsearFecha(s));
+				break;
+		}
 	}
 
 	private void setDatosPersonales(Persona persona, int i, String s) {
@@ -291,6 +295,7 @@ public class ContactosCovid {
 				break;
 		}
 	}
+
 
 	private PosicionPersona crearPosicionPersona(String[] data) {
 		PosicionPersona posicionPersona = new PosicionPersona();
