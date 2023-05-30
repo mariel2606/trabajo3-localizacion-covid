@@ -60,10 +60,19 @@ public class ListaContactos {
 	}
 
 	private void insertarNuevoNodoTemporal(NodoTemporal ant, NodoTemporal aux, PosicionPersona p) {
+		NodoTemporal nuevo = crearNuevoNodoTemporal(p);
+		insertarNodoPosicion(nuevo, p);
+		insertarNodoTemporalEnLista(ant, aux, nuevo);
+	}
+
+	private NodoTemporal crearNuevoNodoTemporal(PosicionPersona p) {
 		NodoTemporal nuevo = new NodoTemporal();
 		nuevo.setFecha(p.getFechaPosicion());
+		return nuevo;
+	}
 
-		NodoPosicion npActual = nuevo.getListaCoordenadas();
+	private void insertarNodoPosicion(NodoTemporal nodoTemporal, PosicionPersona p) {
+		NodoPosicion npActual = nodoTemporal.getListaCoordenadas();
 		NodoPosicion npAnt = null;
 		boolean npEncontrado = false;
 
@@ -79,13 +88,15 @@ public class ListaContactos {
 
 		if (!npEncontrado) {
 			NodoPosicion npNuevo = new NodoPosicion(p.getCoordenada(), 1, null);
-			if (nuevo.getListaCoordenadas() == null) {
-				nuevo.setListaCoordenadas(npNuevo);
+			if (nodoTemporal.getListaCoordenadas() == null) {
+				nodoTemporal.setListaCoordenadas(npNuevo);
 			} else {
 				npAnt.setSiguiente(npNuevo);
 			}
 		}
+	}
 
+	private void insertarNodoTemporalEnLista(NodoTemporal ant, NodoTemporal aux, NodoTemporal nuevo) {
 		if (ant != null) {
 			nuevo.setSiguiente(aux);
 			ant.setSiguiente(nuevo);
@@ -96,7 +107,6 @@ public class ListaContactos {
 
 		this.size++;
 	}
-
 
 	public int personasEnCoordenadas () {
 		NodoPosicion aux = this.lista.getListaCoordenadas();
