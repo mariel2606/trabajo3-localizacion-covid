@@ -3,9 +3,9 @@ package com.practica.ems.covid;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -99,7 +99,14 @@ public class ContactosCovid {
 		try {
 			// Apertura del fichero y creacion de BufferedReader para poder
 			// hacer una lectura comoda (disponer del metodo readLine()).
-			abrirFichero(archivo, fichero, fr, br, reset);
+			archivo = new File(fichero);
+			fr = new FileReader(archivo);
+			br = new BufferedReader(fr);
+			if (reset) {
+				this.poblacion = new Poblacion();
+				this.localizacion = new Localizacion();
+				this.listaContactos = new ListaContactos();
+			}
 			/**
 			 * Lectura del fichero	línea a línea. Compruebo que cada línea 
 			 * tiene el tipo PERSONA o LOCALIZACION y cargo la línea de datos en la 
@@ -113,16 +120,11 @@ public class ContactosCovid {
 						throw new EmsInvalidTypeException();
 					}
 					if (datos[0].equals("PERSONA")) {
-						if (datos.length != Constantes.MAX_DATOS_PERSONA) {
-							throw new EmsInvalidNumberOfDataException("El número de datos para PERSONA es menor de 8");
-						}
+						numDatosPersonas(Arrays.toString(datos));
 						this.poblacion.addPersona(this.crearPersona(datos));
 					}
 					if (datos[0].equals("LOCALIZACION")) {
-						if (datos.length != Constantes.MAX_DATOS_LOCALIZACION) {
-							throw new EmsInvalidNumberOfDataException(
-									"El número de datos para LOCALIZACION es menor de 6" );
-						}
+						numDatosLocalizacion(Arrays.toString(datos));
 						PosicionPersona pp = this.crearPosicionPersona(datos);
 						this.localizacion.addLocalizacion(pp);
 						this.listaContactos.insertarNodoTemporal(pp);
@@ -138,18 +140,15 @@ public class ContactosCovid {
 		}
 	}
 
-	public void abrirFichero (File archivo, String fichero, FileReader fr, BufferedReader br, boolean reset){
-		archivo = new File(fichero);
-		try {
-			fr = new FileReader(archivo);
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
+	public  void numDatosLocalizacion (String datos) throws EmsInvalidNumberOfDataException {
+		if (datos.length() != Constantes.MAX_DATOS_LOCALIZACION) {
+			throw new EmsInvalidNumberOfDataException(
+					"El número de datos para LOCALIZACION es menor de 6" );
 		}
-		br = new BufferedReader(fr);
-		if (reset) {
-			this.poblacion = new Poblacion();
-			this.localizacion = new Localizacion();
-			this.listaContactos = new ListaContactos();
+	}
+	public void numDatosPersonas (String datos) throws EmsInvalidNumberOfDataException {
+		if (datos.length() != Constantes.MAX_DATOS_PERSONA) {
+			throw new EmsInvalidNumberOfDataException("El número de datos para PERSONA es menor de 8");
 		}
 	}
 	public void cerrarFichero (FileReader fichero){
