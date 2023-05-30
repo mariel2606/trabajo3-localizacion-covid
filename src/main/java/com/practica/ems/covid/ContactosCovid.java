@@ -138,9 +138,7 @@ public class ContactosCovid {
 			cerrarFichero(fr);
 		}
 	}
-public void comprobarNumPersonas (){
 
-}
 	public BufferedReader inicializarFichero (boolean reset, String fichero, File archivo, FileReader fr, BufferedReader br){
 		archivo = new File(fichero);
 		try {
