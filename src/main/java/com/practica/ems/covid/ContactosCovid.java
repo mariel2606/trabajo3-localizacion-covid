@@ -251,7 +251,7 @@ public class ContactosCovid {
 
 	private Persona crearPersona(String[] data) {
 		Persona persona = new Persona();
-		int numDatos = Math.min(data.length, Constantes.MAX_DATOS_PERSONA); // Limitar el número de datos al máximo permitido
+		int numDatos = Math.min(data.length, Constantes.MAX_DATOS_PERSONA);
 
 		for (int i = 1; i < numDatos; i++) {
 			String s = data[i];
@@ -259,22 +259,14 @@ public class ContactosCovid {
 			if (s != null && !s.isEmpty()) {
 				switch (i) {
 					case 1:
-						persona.setDocumento(s);
-						break;
 					case 2:
-						persona.setNombre(s);
-						break;
 					case 3:
-						persona.setApellidos(s);
+						setDatosPersonales(persona, i, s);
 						break;
 					case 4:
-						persona.setEmail(s);
-						break;
 					case 5:
-						persona.setDireccion(s);
-						break;
 					case 6:
-						persona.setCp(s);
+						setDatosContacto(persona, i, s);
 						break;
 					case 7:
 						persona.setFechaNacimiento(parsearFecha(s));
@@ -284,6 +276,34 @@ public class ContactosCovid {
 		}
 
 		return persona;
+	}
+
+	private void setDatosPersonales(Persona persona, int i, String s) {
+		switch (i) {
+			case 1:
+				persona.setDocumento(s);
+				break;
+			case 2:
+				persona.setNombre(s);
+				break;
+			case 3:
+				persona.setApellidos(s);
+				break;
+		}
+	}
+
+	private void setDatosContacto(Persona persona, int i, String s) {
+		switch (i) {
+			case 4:
+				persona.setEmail(s);
+				break;
+			case 5:
+				persona.setDireccion(s);
+				break;
+			case 6:
+				persona.setCp(s);
+				break;
+		}
 	}
 
 	private PosicionPersona crearPosicionPersona(String[] data) {
