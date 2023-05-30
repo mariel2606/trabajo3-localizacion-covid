@@ -218,37 +218,6 @@ public class ContactosCovid {
 		return cadenas;
 	}
 
-	/*private Persona crearPersona(String[] data) {
-		Persona persona = new Persona();
-		for (int i = 1; i < Constantes.MAX_DATOS_PERSONA; i++) {
-			String s = data[i];
-			switch (i) {
-			case 1:
-				persona.setDocumento(s);
-				break;
-			case 2:
-				persona.setNombre(s);
-				break;
-			case 3:
-				persona.setApellidos(s);
-				break;
-			case 4:
-				persona.setEmail(s);
-				break;
-			case 5:
-				persona.setDireccion(s);
-				break;
-			case 6:
-				persona.setCp(s);
-				break;
-			case 7:
-				persona.setFechaNacimiento(parsearFecha(s));
-				break;
-			}
-		}
-		return persona;
-	}*/
-
 	private Persona crearPersona(String[] data) {
 		Persona persona = new Persona();
 		int numDatos = Math.min(data.length, Constantes.MAX_DATOS_PERSONA);
@@ -309,20 +278,37 @@ public class ContactosCovid {
 	private PosicionPersona crearPosicionPersona(String[] data) {
 		PosicionPersona posicionPersona = new PosicionPersona();
 		String fecha = null, hora;
-		float latitud = 0, longitud;
-		for (int i = 1; i < Constantes.MAX_DATOS_LOCALIZACION; i++) {
+		float latitud = 0, longitud = 0;
+		int numDatos = Math.min(data.length, Constantes.MAX_DATOS_LOCALIZACION);
+
+		for (int i = 1; i < numDatos; i++) {
 			String s = data[i];
-			switch (i) {
-			case 1:
-				posicionPersona.setDocumento(s);
-				break;
-			case 2:
-				fecha = data[i];
-				break;
-			case 3:
-				hora = data[i];
-				posicionPersona.setFechaPosicion(parsearFecha(fecha, hora));
-				break;
+
+			if (s != null && !s.isEmpty()) {
+				switch (i) {
+					case 1:
+						posicionPersona.setDocumento(s);
+						break;
+					case 2:
+						fecha = s;
+						break;
+					case 3:
+						hora = s;
+						posicionPersona.setFechaPosicion(parsearFecha(fecha, hora));
+						break;
+					case 4:
+					case 5:
+						setCoordenada(posicionPersona, i, s, latitud, longitud);
+						break;
+				}
+			}
+		}
+
+		return posicionPersona;
+	}
+
+	private void setCoordenada(PosicionPersona posicionPersona, int i, String s, float latitud, float longitud) {
+		switch (i) {
 			case 4:
 				latitud = Float.parseFloat(s);
 				break;
@@ -330,11 +316,10 @@ public class ContactosCovid {
 				longitud = Float.parseFloat(s);
 				posicionPersona.setCoordenada(new Coordenada(latitud, longitud));
 				break;
-			}
 		}
-		return posicionPersona;
 	}
-	
+
+
 	private FechaHora parsearFecha (String fecha) {
 		int dia, mes, anio;
 		String[] valores = fecha.split("\\/");
