@@ -5,7 +5,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -90,12 +89,17 @@ public class ContactosCovid {
 		}
 	}
 
-	@SuppressWarnings("resource")
 	public void loadDataFile(String fichero, boolean reset) {
 		File archivo = null;
 		FileReader fr = null;
 		BufferedReader br = null;
 		String datas[] = null, data = null;
+		loadDataFile(fichero, reset, archivo, fr, br, datas, data);
+
+	}
+
+	@SuppressWarnings("resource")
+	public void loadDataFile(String fichero, boolean reset, File archivo, FileReader fr, BufferedReader br, String datas[], String data ) {
 		try {
 			// Apertura del fichero y creacion de BufferedReader para poder
 			// hacer una lectura comoda (disponer del metodo readLine()).
@@ -120,11 +124,16 @@ public class ContactosCovid {
 						throw new EmsInvalidTypeException();
 					}
 					if (datos[0].equals("PERSONA")) {
-						numDatosPersonas(Arrays.toString(datos));
+						if (datos.length != Constantes.MAX_DATOS_PERSONA) {
+							throw new EmsInvalidNumberOfDataException("El número de datos para PERSONA es menor de 8");
+						}
 						this.poblacion.addPersona(this.crearPersona(datos));
 					}
 					if (datos[0].equals("LOCALIZACION")) {
-						numDatosLocalizacion(Arrays.toString(datos));
+						if (datos.length != Constantes.MAX_DATOS_LOCALIZACION) {
+							throw new EmsInvalidNumberOfDataException(
+									"El número de datos para LOCALIZACION es menor de 6" );
+						}
 						PosicionPersona pp = this.crearPosicionPersona(datos);
 						this.localizacion.addLocalizacion(pp);
 						this.listaContactos.insertarNodoTemporal(pp);
@@ -140,17 +149,6 @@ public class ContactosCovid {
 		}
 	}
 
-	public  void numDatosLocalizacion (String datos) throws EmsInvalidNumberOfDataException {
-		if (datos.length() != Constantes.MAX_DATOS_LOCALIZACION) {
-			throw new EmsInvalidNumberOfDataException(
-					"El número de datos para LOCALIZACION es menor de 6" );
-		}
-	}
-	public void numDatosPersonas (String datos) throws EmsInvalidNumberOfDataException {
-		if (datos.length() != Constantes.MAX_DATOS_PERSONA) {
-			throw new EmsInvalidNumberOfDataException("El número de datos para PERSONA es menor de 8");
-		}
-	}
 	public void cerrarFichero (FileReader fichero){
 		try {
 			if (null != fichero) {
