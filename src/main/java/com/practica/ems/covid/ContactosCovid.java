@@ -103,14 +103,7 @@ public class ContactosCovid {
 		try {
 			// Apertura del fichero y creacion de BufferedReader para poder
 			// hacer una lectura comoda (disponer del metodo readLine()).
-			archivo = new File(fichero);
-			fr = new FileReader(archivo);
-			br = new BufferedReader(fr);
-			if (reset) {
-				this.poblacion = new Poblacion();
-				this.localizacion = new Localizacion();
-				this.listaContactos = new ListaContactos();
-			} 
+			inicializarFichero(reset, fichero, archivo, fr, br);
 			/**
 			 * Lectura del fichero	línea a línea. Compruebo que cada línea 
 			 * tiene el tipo PERSONA o LOCALIZACION y cargo la línea de datos en la 
@@ -149,6 +142,16 @@ public class ContactosCovid {
 		}
 	}
 
+	public void inicializarFichero (boolean reset, String fichero, File archivo, FileReader fr, BufferedReader br){
+		archivo = new File(fichero);
+		fr = new FileReader(archivo);
+		br = new BufferedReader(fr);
+		if (reset) {
+			this.poblacion = new Poblacion();
+			this.localizacion = new Localizacion();
+			this.listaContactos = new ListaContactos();
+		}
+	}
 	public void cerrarFichero (FileReader fichero){
 		try {
 			if (null != fichero) {
