@@ -4,6 +4,7 @@ package com.practica.ems.covid;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -91,43 +92,18 @@ public class ContactosCovid {
 
 	@SuppressWarnings("resource")
 	public void loadDataFile(String fichero, boolean reset) {
-		File archivo = null;
-		FileReader fr = null;
-		BufferedReader br = null;
-		String datas[] = null, data = null;
-
 		try {
-			archivo = new File(fichero);
-			fr = new FileReader(archivo);
-			br = new BufferedReader(fr);
+			File archivo = new File(fichero);
+			FileReader fr = new FileReader(archivo);
+			BufferedReader br = new BufferedReader(fr);
 
 			if (reset) {
 				resetData();
 			}
 
-			while ((data = br.readLine()) != null) {
-				datas = dividirEntrada(data.trim());
-
-				for (String linea : datas) {
-					String datos[] = this.dividirLineaData(linea);
-
-					if (!datos[0].equals("PERSONA") && !datos[0].equals("LOCALIZACION")) {
-						throw new EmsInvalidTypeException();
-					}
-
-					if (datos[0].equals("PERSONA")) {
-						validateAndAddPersona(datos);
-					}
-
-					if (datos[0].equals("LOCALIZACION")) {
-						validateAndAddLocalizacion(datos);
-					}
-				}
-			}
+			processFile(br, fr);
 		} catch (Exception e) {
 			e.printStackTrace();
-		} finally {
-			cerrarFichero(fr);
 		}
 	}
 
@@ -135,6 +111,38 @@ public class ContactosCovid {
 		this.poblacion = new Poblacion();
 		this.localizacion = new Localizacion();
 		this.listaContactos = new ListaContactos();
+	}
+
+	private void processFile(BufferedReader br, FileReader fr) throws IOException, EmsInvalidNumberOfDataException, EmsDuplicateLocationException, EmsInvalidTypeException, EmsDuplicatePersonException {
+		String line;
+		while ((line = br.readLine()) != null) {
+			processLine(line);
+		}
+
+		cerrarFichero(fr);
+	}
+
+	private void processLine(String line) throws EmsInvalidNumberOfDataException, EmsDuplicateLocationException, EmsInvalidTypeException, EmsDuplicatePersonException {
+		String[] datas = dividirEntrada(line.trim());
+		for (String linea : datas) {
+			processLineData(linea);
+		}
+	}
+
+	private void processLineData(String linea) throws EmsInvalidTypeException, EmsInvalidNumberOfDataException, EmsDuplicatePersonException, EmsDuplicateLocationException {
+		String[] datos = this.dividirLineaData(linea);
+
+		if (!datos[0].equals("PERSONA") && !datos[0].equals("LOCALIZACION")) {
+			throw new EmsInvalidTypeException();
+		}
+
+		if (datos[0].equals("PERSONA")) {
+			validateAndAddPersona(datos);
+		}
+
+		if (datos[0].equals("LOCALIZACION")) {
+			validateAndAddLocalizacion(datos);
+		}
 	}
 
 	private void validateAndAddPersona(String[] datos) throws EmsInvalidNumberOfDataException, EmsDuplicatePersonException {
