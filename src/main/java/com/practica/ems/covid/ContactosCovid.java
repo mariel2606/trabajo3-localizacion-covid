@@ -145,16 +145,17 @@ public class ContactosCovid {
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
-			// En el finally cerramos el fichero, para asegurarnos
-			// que se cierra tanto si todo va bien como si salta
-			// una excepcion.
-			try {
-				if (null != fr) {
-					fr.close();
-				}
-			} catch (Exception e2) {
-				e2.printStackTrace();
+			cerrarFichero(fr);
+		}
+	}
+
+	public void cerrarFichero (FileReader fichero){
+		try {
+			if (null != fichero) {
+				fichero.close();
 			}
+		} catch (Exception e2) {
+			e2.printStackTrace();
 		}
 	}
 	public int findPersona(String documento) throws EmsPersonNotFoundException {
