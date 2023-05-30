@@ -3,6 +3,7 @@ package com.practica.ems.covid;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -98,14 +99,7 @@ public class ContactosCovid {
 		try {
 			// Apertura del fichero y creacion de BufferedReader para poder
 			// hacer una lectura comoda (disponer del metodo readLine()).
-			archivo = new File(fichero);
-			fr = new FileReader(archivo);
-			br = new BufferedReader(fr);
-			if (reset) {
-				this.poblacion = new Poblacion();
-				this.localizacion = new Localizacion();
-				this.listaContactos = new ListaContactos();
-			}
+			abrirFichero(archivo, fichero, fr, br, reset);
 			/**
 			 * Lectura del fichero	línea a línea. Compruebo que cada línea 
 			 * tiene el tipo PERSONA o LOCALIZACION y cargo la línea de datos en la 
@@ -144,6 +138,20 @@ public class ContactosCovid {
 		}
 	}
 
+	public void abrirFichero (File archivo, String fichero, FileReader fr, BufferedReader br, boolean reset){
+		archivo = new File(fichero);
+		try {
+			fr = new FileReader(archivo);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+		br = new BufferedReader(fr);
+		if (reset) {
+			this.poblacion = new Poblacion();
+			this.localizacion = new Localizacion();
+			this.listaContactos = new ListaContactos();
+		}
+	}
 	public void cerrarFichero (FileReader fichero){
 		try {
 			if (null != fichero) {
